@@ -21,5 +21,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Account voor de magazijnmedewerker uit de user stories (wachtwoord: "password").
+        User::factory()->create([
+            'name' => 'Magazijnmedewerker',
+            'email' => 'magazijn@jamin.nl',
+            'rolename' => 'Magazijnmedewerker',
+        ]);
     }
 }
