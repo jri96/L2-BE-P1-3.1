@@ -40,7 +40,10 @@ class DatabaseSeeder extends Seeder
         foreach ($accounts as $account) {
             User::firstOrCreate(
                 ['email' => $account['email']],
-                array_merge($account, ['password' => Hash::make('password')])
+                array_merge($account, [
+                    'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
+                ])
             );
         }
     }
