@@ -25,6 +25,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define(
+            'magazijn.bekijken',
+            fn (User $user): bool => $user->heeftMagazijnToegang()
+        );
+
+        Gate::define(
             'magazijn.voorraad-bijwerken',
             fn (User $user): bool => $user->isAdministrator()
         );

@@ -17,12 +17,14 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    // Leesrechten: bereikbaar voor elke rol (Magazijnmedewerker en Administrator).
-    Route::get('/magazijn', [MagazijnOverzichtController::class, 'index'])->name('magazijn.index');
+    // Leesrecht op het magazijn: Magazijnmedewerker en Administrator.
+    Route::middleware('can:magazijn.bekijken')->group(function () {
+        Route::get('/magazijn', [MagazijnOverzichtController::class, 'index'])->name('magazijn.index');
 
-    Route::get('/magazijn/product/{product}/levering', [LeveringInformatieController::class, 'show'])->name('magazijn.levering');
+        Route::get('/magazijn/product/{product}/levering', [LeveringInformatieController::class, 'show'])->name('magazijn.levering');
 
-    Route::get('/magazijn/product/{product}/allergenen', [AllergenenOverzichtController::class, 'show'])->name('magazijn.allergenen');
+        Route::get('/magazijn/product/{product}/allergenen', [AllergenenOverzichtController::class, 'show'])->name('magazijn.allergenen');
+    });
 
     // Schrijfrechten: alleen voor de Administrator-rol.
     Route::middleware('can:magazijn.voorraad-bijwerken')->group(function () {

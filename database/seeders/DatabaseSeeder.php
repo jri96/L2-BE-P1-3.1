@@ -23,17 +23,22 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Beheerder',
                 'email' => 'admin@jamin.nl',
-                'rolename' => 'Administrator',
+                'rolename' => User::ROLE_ADMINISTRATOR,
             ],
             [
                 'name' => 'Magazijnmedewerker',
                 'email' => 'magazijn@jamin.nl',
-                'rolename' => 'Magazijnmedewerker',
+                'rolename' => User::ROLE_MAGAZIJNMEDEWERKER,
+            ],
+            [
+                'name' => 'Kantoormedewerker',
+                'email' => 'gebruiker@jamin.nl',
+                'rolename' => User::ROLE_GEBRUIKER,
             ],
             [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
-                'rolename' => 'Magazijnmedewerker',
+                'rolename' => User::ROLE_MAGAZIJNMEDEWERKER,
             ],
         ];
 
