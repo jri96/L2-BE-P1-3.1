@@ -10,7 +10,8 @@ BE-opdracht 1 — Magazijnbeheer voor Jamin, gebouwd met Laravel, Breeze (Blade)
 | `GET /magazijn/product/{product}/levering` | `magazijn.levering` | Levering Informatie, gesorteerd op **Datum laatste levering oplopend** |
 | `GET /magazijn/product/{product}/allergenen` | `magazijn.allergenen` | Overzicht Allergenen, gesorteerd op **Naam oplopend** |
 
-Alle routes staan achter de `auth` middleware.
+Alle routes staan achter de `auth` middleware; de magazijnschermen vragen daarbovenop
+het recht `magazijn.bekijken` (zie *Rollen en rechten*).
 
 ## User stories
 
@@ -32,28 +33,34 @@ Alle routes staan achter de `auth` middleware.
 
 ## Rollen en rechten
 
-Het systeem kent twee rollen (`users.rolename`):
+Het systeem kent drie rollen (`users.rolename`), oplopend in rechten:
 
-| Recht | Magazijnmedewerker | Administrator |
-| --- | --- | --- |
-| Overzicht Magazijn Jamin bekijken | ✅ | ✅ |
-| Levering Informatie bekijken | ✅ | ✅ |
-| Overzicht Allergenen bekijken | ✅ | ✅ |
-| Voorraad bijwerken (`/magazijn/voorraad`) | ❌ 403 | ✅ |
-| Rollen van gebruikers wijzigen (`/gebruikers`) | ❌ 403 | ✅ |
+| Recht | Gebruiker | Magazijnmedewerker | Administrator |
+| --- | --- | --- | --- |
+| Dashboard en profiel | ✅ | ✅ | ✅ |
+| Overzicht Magazijn Jamin bekijken | ❌ 403 | ✅ | ✅ |
+| Levering Informatie bekijken | ❌ 403 | ✅ | ✅ |
+| Overzicht Allergenen bekijken | ❌ 403 | ✅ | ✅ |
+| Voorraad bijwerken (`/magazijn/voorraad`) | ❌ 403 | ❌ 403 | ✅ |
+| Rollen van gebruikers wijzigen (`/gebruikers`) | ❌ 403 | ❌ 403 | ✅ |
 
-Beide rollen kunnen dus gewoon inloggen en het magazijn gebruiken; alleen de
-Administrator mag schrijven. De rechten zitten in Gates
-(`magazijn.voorraad-bijwerken` en `gebruiker.beheren`, zie `AppServiceProvider`)
-en worden via de `can`-middleware op de routes afgedwongen — niet alleen in de UI.
+De rechten zitten in Gates (`magazijn.bekijken`, `magazijn.voorraad-bijwerken` en
+`gebruiker.beheren`, zie `AppServiceProvider`) en worden via de `can`-middleware op
+de routes afgedwongen — niet alleen in de UI. De navigatie toont de magazijn- en
+beheerlinks alleen als de ingelogde gebruiker het bijbehorende recht heeft.
+
+**Magazijnmedewerker is de rol uit de user stories** ("Als Magazijnmedewerker") en
+blijft de standaardrol voor nieuwe accounts. De `Gebruiker`-rol is bedoeld voor
+accounts zonder magazijntoegang, `Administrator` mag ook schrijven.
 
 Inlogaccounts (wachtwoord overal `password`):
 
-| E-mail | Rol |
-| --- | --- |
-| `magazijn@jamin.nl` | Magazijnmedewerker |
-| `admin@jamin.nl` | Administrator |
-| `test@example.com` | Magazijnmedewerker |
+| E-mail | Rol | Magazijn zien |
+| --- | --- | --- |
+| `magazijn@jamin.nl` | Magazijnmedewerker | ✅ |
+| `admin@jamin.nl` | Administrator | ✅ |
+| `gebruiker@jamin.nl` | Gebruiker | ❌ |
+| `test@example.com` | Magazijnmedewerker | ✅ |
 
 ## Installatie
 
@@ -63,7 +70,7 @@ npm install && npm run build
 cp .env.example .env
 php artisan key:generate
 php artisan migrate        # voert Database_jamin.sql uit via de import-migration
-php artisan db:seed        # maakt magazijn@jamin.nl / password aan
+php artisan db:seed        # maakt de vier inlogaccounts aan (wachtwoord: password)
 php artisan serve --port=8080
 ```
 
