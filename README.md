@@ -30,6 +30,31 @@ Alle routes staan achter de `auth` middleware.
    `In dit product zitten geen stoffen die een allergische reactie kunnen veroorzaken`
    en na 4 seconden automatisch terug naar **Overzicht Magazijn Jamin**.
 
+## Rollen en rechten
+
+Het systeem kent twee rollen (`users.rolename`):
+
+| Recht | Magazijnmedewerker | Administrator |
+| --- | --- | --- |
+| Overzicht Magazijn Jamin bekijken | ✅ | ✅ |
+| Levering Informatie bekijken | ✅ | ✅ |
+| Overzicht Allergenen bekijken | ✅ | ✅ |
+| Voorraad bijwerken (`/magazijn/voorraad`) | ❌ 403 | ✅ |
+| Rollen van gebruikers wijzigen (`/gebruikers`) | ❌ 403 | ✅ |
+
+Beide rollen kunnen dus gewoon inloggen en het magazijn gebruiken; alleen de
+Administrator mag schrijven. De rechten zitten in Gates
+(`magazijn.voorraad-bijwerken` en `gebruiker.beheren`, zie `AppServiceProvider`)
+en worden via de `can`-middleware op de routes afgedwongen — niet alleen in de UI.
+
+Inlogaccounts (wachtwoord overal `password`):
+
+| E-mail | Rol |
+| --- | --- |
+| `magazijn@jamin.nl` | Magazijnmedewerker |
+| `admin@jamin.nl` | Administrator |
+| `test@example.com` | Magazijnmedewerker |
+
 ## Installatie
 
 ```bash
