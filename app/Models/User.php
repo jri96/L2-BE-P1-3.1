@@ -18,6 +18,37 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Rol met volledige beheerdersrechten: voorraad bijwerken en rollen beheren.
+     */
+    public const ROLE_ADMINISTRATOR = 'Administrator';
+
+    /**
+     * Standaardrol: alle magazijnschermen bekijken (leesrecht).
+     */
+    public const ROLE_MAGAZIJNMEDEWERKER = 'Magazijnmedewerker';
+
+    /**
+     * Alle rollen die in de applicatie gebruikt worden.
+     *
+     * @return array<int, string>
+     */
+    public static function rollen(): array
+    {
+        return [
+            self::ROLE_MAGAZIJNMEDEWERKER,
+            self::ROLE_ADMINISTRATOR,
+        ];
+    }
+
+    /**
+     * Of deze gebruiker de Administrator-rol heeft.
+     */
+    public function isAdministrator(): bool
+    {
+        return $this->rolename === self::ROLE_ADMINISTRATOR;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

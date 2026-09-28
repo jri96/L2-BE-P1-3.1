@@ -42,4 +42,14 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Geef de gebruiker de rol Administrator.
+     */
+    public function administrator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'rolename' => User::ROLE_ADMINISTRATOR,
+        ]);
+    }
 }
