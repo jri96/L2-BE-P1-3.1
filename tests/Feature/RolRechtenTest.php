@@ -131,6 +131,56 @@ class RolRechtenTest extends TestCase
         $this->assertSame(User::ROLE_MAGAZIJNMEDEWERKER, $collega->fresh()->rolename);
     }
 
+    public function test_gebruiker_kan_het_magazijn_niet_bekijken(): void
+    {
+        $gebruiker = User::factory()->gebruiker()->create();
+        $product = Product::where('Naam', 'Mintnopjes')->firstOrFail();
+
+        $this->actingAs($gebruiker)->get('/magazijn')->assertForbidden();
+        $this->actingAs($gebruiker)->get(route('magazijn.levering', $product))->assertForbidden();
+        $this->actingAs($gebruiker)->get(route('magazijn.allergenen', $product))->assertForbidden();
+    }
+
+    public function test_gebruiker_ziet_de_magazijnlink_niet_in_de_navigatie(): void
+    {
+        $gebruiker = User::factory()->gebruiker()->create();
+
+        $response = $this->actingAs($gebruiker)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee(route('magazijn.index'), false);
+        $response->assertDontSee(route('magazijn.voorraad'), false);
+        $response->assertDontSee(route('gebruiker.index'), false);
+    }
+
+    public function test_gebruiker_kan_wel_zijn_dashboard_en_profiel_bekijken(): void
+    {
+        $gebruiker = User::factory()->gebruiker()->create();
+
+        $this->actingAs($gebruiker)->get('/dashboard')->assertOk();
+        $this->actingAs($gebruiker)->get('/profile')->assertOk();
+    }
+
+    public function test_gebruiker_kan_de_beheerschermen_niet_bereiken(): void
+    {
+        $gebruiker = User::factory()->gebruiker()->create();
+        $magazijn = Magazijn::firstOrFail();
+
+        $this->actingAs($gebruiker)->get(route('magazijn.voorraad'))->assertForbidden();
+        $this->actingAs($gebruiker)->get(route('gebruiker.index'))->assertForbidden();
+        $this->actingAs($gebruiker)
+            ->put(route('magazijn.voorraad.bijwerken', $magazijn), ['AantalAanwezig' => 1])
+            ->assertForbidden();
+    }
+
+    public function test_nieuwe_accounts_krijgen_de_rol_magazijnmedewerker(): void
+    {
+        $this->assertSame(
+            User::ROLE_MAGAZIJNMEDEWERKER,
+            User::factory()->create()->rolename
+        );
+    }
+
     public function test_beheerschermen_zijn_afgeschermd_achter_authenticatie(): void
     {
         $this->get(route('magazijn.voorraad'))->assertRedirect('/login');
